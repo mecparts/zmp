@@ -1,0 +1,3 @@
+-c3700h -ptext=3700h,data -ozminit.ovr -mzminit.map zminit.obj main.obj \
+a:libx.lib a:libc.lib
+
