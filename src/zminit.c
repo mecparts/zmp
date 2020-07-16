@@ -50,6 +50,8 @@ static void title()
    static char line1[] = "ZMP - A ZMODEM Program for CP/M";
    static char line3[] = "Developed from HMODEM II";
    static char line4[] = "by Ron Murray";
+   static char line5[] = "Updated to Hi Tech C v3.09";
+   static char line6[] = "by Wayne Hortensius";
 
    cls();
    locate(7,ctr(line1));
@@ -60,6 +62,10 @@ static void title()
    printf(line3);
    locate(11,ctr(line4));
    printf(line4);
+   locate(13,ctr(line5));
+   printf(line5);
+   locate(14,ctr(line6));
+   printf(line6);
    locate(14,0);
    hidecurs();
    flush();
@@ -146,4 +152,4 @@ static void resetace()  /* to default values */
 }
 
 /* End of initialisation overlay */
-
+
