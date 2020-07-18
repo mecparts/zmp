@@ -128,6 +128,7 @@ good:
 fubar:
    canit();
    if (Fd >= 0) {
+      closeit();
       unlink(Pathname);         /* File incomplete: erase it */
    }
 fubar1:
@@ -138,4 +139,4 @@ fubar1:
    return NERROR;
 }
 /************************** END OF MODULE 8 *********************************/
-
+
