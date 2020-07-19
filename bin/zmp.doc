@@ -181,21 +181,6 @@ L - Change Line settings.
      contains a legal value,  then that baud rate is set for you, 
      otherwise  it sets the default baud rate as selected in  the 
      .CFG file. 
-          You  will  also find in this menu an option  to  enable 
-     word  wrap in terminal mode,  and provision to switch to  an 
-     alternate port. The word wrap function is rather simplistic, 
-     but it does work. It functions only with characters typed at 
-     the keyboard, and is designed to wrap on 80-character lines. 
-     If  you are talking to a BBS which also has automatic  word-
-     wrap, it's probably best to leave this turned off, otherwise 
-     you  could end up with double-spaced lines.  But if you  are 
-     talking  to a human operator,  or if you are using a  packet 
-     radio TNC, turn it on.
-          The alternate port switch allows use of two ports  with 
-     ZMP. The status line (printed when terminal mode is entered) 
-     will  display which port is in use.  The configuration  menu 
-     allows  you to define which of the two is the default  port, 
-     selected when ZMP is started up.
 
 M - Toggle capture mode in Memory.
           Received characters will be saved in a buffer and saved 
@@ -275,26 +260,6 @@ S - Send a file.
      esc-L  menu and the configuration overlay have an option  to 
      disable CRC-32.
 
-U - Execute user-defined overlay.
-          This  feature  is designed to allow execution of  user-
-     produced overlays,  and other protocols which won't fit into 
-     the   normal  transfer  overlay.   These  must   be   called 
-     ZMxxxxxx.OVR,  and must be linked to be loaded at a specific 
-     address  which will probably vary with different versions of 
-     ZMP.  For v1.5, this address is 03ABAh. I may produce a list 
-     of  available functions in the main ZMP.COM file for use  by 
-     these overlays if there is enough interest.
-          After  typing  ESC  U,  you will be  prompted  for  the 
-     overlay name.  The overlay will then be executed as  normal. 
-     An  example  of  a  user overlay  is  ZMYAPP.OVR,  which  is 
-     described  further  below.  Other  possibilities  include  a 
-     Kermit overlay,  but as this would be a lengthy project, and 
-     as I have no use at this time for a Kermit overlay,  whether 
-     or not it gets done depends on the level of interest  shown. 
-     If you are interested in a ZMP Kermit overlay, or if you can 
-     think   of   any  other  overlays  which   could/should   be 
-     implemented, please let me know.
-
 X - Hangup.
           This  function causes the modem to disconnect from  the 
      phone line, by momentarily dropping DTR.
@@ -311,27 +276,7 @@ Z - Clear screen.
      with rubbish.
 
 
-4. Hints for overlay writers. 
-
-     Most  of the code is quite straight forward and will present 
-no problem. The section most likely to cause trouble is that part 
-concerned  with setting the required baud rate  and  (especially) 
-the  code for setting the correct parity,  number of stop  bit(s) 
-and data bits. 
-
-     We  suggest  that you first get the main part  of  the  code 
-going by putting a return in the init: section at the point where 
-it  says "put your code here" This will let you check the rest of 
-the  code.  If the opening screen looks 'neat and tidy' then  you 
-know that 1) the code is in the right place,  and 2) your  cursor 
-addressing is working. Check the I/O by talking to your modem and 
-then  by  exchanging a file with another zmodem user/board  after 
-you set the I/O chip up with another program such as IMP. 
-
-     Now  get the baud-setting working and then finally the  bit-
-bashing required to set the parity, etc.
-
-5. Other information.
+4. Other information.
 
 a) ZMP at higher baud rates.
           When  I  first produced ZMP,  I was more interested  in 
@@ -372,24 +317,7 @@ a) ZMP at higher baud rates.
           I  would  like  to hear from anyone  who  has  had  any 
      success with either of these two approaches.
 
-b) The ZMYAPP overlay.
-
-          This  performs the amateur packet radio YAPP  protocol, 
-     and  is accessed by the ESC-U function.  Operation is pretty 
-     well  obvious,  but there are a couple of problems with  it, 
-     depending on the hardware capabilities of your computer. The 
-     main one is that, if the file to be received is greater than 
-     the buffer size in ZMP,  the ZMP computer MUST be capable of 
-     hardware handshaking (CTS/RTS). There appears to be no other 
-     way  of stopping a TNC (which must be in  transparent  mode) 
-     while we write the buffer to disk. The same thing will occur 
-     if  the  TNC buffer fills:  if the TNC cannot stop  the  ZMP 
-     program with CTS (DTR???) then its buffer will overrun.
-          The ZMYAPP overlay works fine with small files.  Again, 
-     I would like to hear from anyone who has success with larger 
-     files on different machines.
-
-6. Acknowledgements.
+5. Acknowledgements.
 
      ZMP was developed from Hal Maney's Heath-specific HMODEM II. 
 I  would like to thank Hal for writing HMODEM:  CP/M  users  have 
@@ -417,7 +345,7 @@ recalcitrant procedures,  and experience in file  transfers,  ZMP
 would not have been produced. Thank you.
 
 
-7. Finally...
+6. Finally...
      The files contained in this library are placed in the public 
 domain.  Just don't sell it,  claim you wrote it,  or do anything 
 similar that might annoy me.  Above all,  don't bother trying  to 
