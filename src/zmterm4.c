@@ -90,28 +90,21 @@ int dial()
          while (nocnt--) {
             n = -1;
             strcpy(number,Modem.dialcmd);
-            if (*p == '+') {
-               strcat(number,Sprint);
-               p++;
-            } else if (*p == '-') {
-               strcat(number,Mci);
-               p++;
-            }
             if ((status == OK) && (j=strlen(p))==1) {
                if (isalpha(n = *p)) {
                   n = toupper(n) - 'A';
+                  p = Book[n].number;
                   setace(n);
-                  strcat(number,Book[n].number);
+                  strcat(number,p);
                   strcat(number,Modem.dialsuffix);
                   mstrout(number,FALSE);
-                  printf("\nDialing %s...", Book[n].name);
-               }
-               else {
+                  p = Book[n].name;
+                  printf("\nDialing %s...", p);
+               } else {
                   printf("\nInvalid Number\n");
                   goto abort;
                }
-            }      
-            else {
+            } else {
                strcat(number,p);
                strcat(number,Modem.dialsuffix);
                mstrout(number,FALSE);
@@ -132,8 +125,7 @@ int dial()
                && !isin(result,Modem.busy4));
 
             if (c) {      /* got connect string */
-               printf("\007\nOn Line to %s\n",
-               n >= 0 ? Book[n].name : p);
+               printf("\007\nOn Line to %s\n", p);
                if (n >= 0) {
                   FDx = !Book[n].echo;
                }
@@ -232,4 +224,4 @@ static int loadnos()
 }
 /*         End of TERM module            */
 /*         End of TERM module File 1         */
-
+
