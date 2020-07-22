@@ -95,8 +95,6 @@ static void getconfig()
       for (i = 0; i < 10; i++) {
          xfgets(KbMacro[i],22,fd);
       }
-      xfgets(Mci,20,fd);
-      xfgets(Sprint,20,fd);
       xfgets(Modem.init,40,fd);
       xfgets(Modem.dialcmd,8,fd);
       xfgets(Modem.dialsuffix,8,fd);
@@ -152,4 +150,4 @@ static void resetace()  /* to default values */
 }
 
 /* End of initialisation overlay */
-
+

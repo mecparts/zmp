@@ -19,7 +19,6 @@ extern void setparity();
 extern void setdatabits();
 extern void setstopbits();
 extern void phonedit();
-extern void ldedit();
 extern void edit();
 extern void savephone();
 extern void saveconfig();
@@ -46,8 +45,7 @@ ovmain()
       printf(" CONFIGURATION MENU ");
       stndend();
 
-      printf("\n\n\tA - Edit long distance access number\n");
-      printf("\tK - Edit keyboard macros\n");
+      printf("\n\n\tK - Edit keyboard macros\n");
       printf("\tL - Set line parameters\n");
       printf("\tM - Set modem parameters\n");
       printf("\tP - Edit phone number list\n");
@@ -59,11 +57,6 @@ ovmain()
       c = chrin();
       c = toupper(c);
       switch (c) {
-
-         case 'A':
-            ldedit();
-            cfgchanged = TRUE;
-            break;
 
          case 'K':
             edit();
@@ -436,4 +429,4 @@ unsigned value;
 }
 
 /********************** END OF ZMCONFIG MODULE 1 ****************************/
-
+

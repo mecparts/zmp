@@ -320,7 +320,7 @@ EXTERN int Inhost
 ;
 #ifdef INIT
 char Version[41]
-=  "Version 1.5+/- -- 27 June 2020"	/* version number for ZMP */
+=  "Version 1.5+/- -- 21 July 2020"	/* version number for ZMP */
 /*  ^_____________________________________^		Maximum length! */
 #endif
 ;
@@ -329,16 +329,6 @@ EXTERN char Lastlog[20];
 EXTERN int Dialing;
 EXTERN int Lastkey;
 
-EXTERN char Mci[21]
-#ifdef MAIN
- = " "
-#endif
-;
-EXTERN char Sprint[21]
-#ifdef MAIN
- = " "
-#endif
-;
 EXTERN int Chardelay
 #ifdef	MAIN
 = 0
@@ -507,4 +497,4 @@ struct dpb {
 EXTERN char **Pathlist;
 
 /******************************* end of zmp.h ******************************/
-
+

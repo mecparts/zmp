@@ -203,39 +203,6 @@ void phonedit()
    }
 }
 
-void ldedit()
-{
-   char *p, *answer;
-   int c;
-
-   answer = Pathname;
-   for (;;) {
-      cls();
-      printf("\r\t\t\t");
-      stndout();
-      printf(" LONG DISTANCE ACCESS CODE ");
-      stndend();
-      printf("\n\nEnter access code to edit:\n\n");
-      printf(
-         "  + (currently '%s')\n  - (currently '%s')\n\tor Z to exit: ",
-         Sprint,Mci);
-      c = chrin();
-      if (c=='+') {
-         p = Sprint;
-      } else if (c=='-') {
-         p = Mci;
-      } else if (c==ESC || c=='Z' || c=='z') {
-            return;
-      }
-      if (c=='+' || c=='-') {
-         printf("\nEnter new code: ");
-         if (getline(answer,20)) {
-            strcpy(p,answer);
-         }
-      }
-   }
-}
-
 void edit()
 {
    int i;
@@ -312,7 +279,6 @@ void saveconfig()
          XonXoff,Filter,ParityMask);
       for (i = 0; i < 10; i++)
          fprintf(fd,"%s\n",KbMacro[i]);
-      fprintf(fd,"%s\n%s\n",Mci,Sprint);
       fprintf(fd,"%s\n%s\n%s\n",Modem.init,Modem.dialcmd,
          Modem.dialsuffix);
       fprintf(fd,"%s\n%s\n%s\n",Modem.connect,Modem.busy1,
@@ -332,4 +298,4 @@ void saveconfig()
 }
 
 /************************* END OF ZMCONFIG MODULE 2 *************************/
-
+
