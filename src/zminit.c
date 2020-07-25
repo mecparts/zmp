@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <cpm.h>
+#include <time.h>
 #include "zmp.h"
 
 extern void userin();
@@ -38,6 +39,7 @@ ovmain()
       Current.cdatabits = Line.databits;        /*  internal   */
       Current.cstopbits = Line.stopbits;        /*  variables  */
    }
+   ZsDos = (bdoshl(CPMGZSD) & 0xFF00)>>8 == 'S';
    Currdrive = Invokdrive;
    Curruser = Invokuser;
    reset(Currdrive,Curruser);
@@ -91,7 +93,7 @@ static void getconfig()
    fd = fopen(Pathname,"rb");
    if (fd) {
       fscanf(
-         fd,"%d %d %d %d %d",&Crcflag,&Wantfcs32,&XonXoff,&Filter,&ParityMask);
+         fd,"%d %d %d %d %d %d",&Crcflag,&Wantfcs32,&XonXoff,&Filter,&ParityMask,&time_zone);
       for (i = 0; i < 10; i++) {
          xfgets(KbMacro[i],22,fd);
       }
@@ -150,4 +152,4 @@ static void resetace()  /* to default values */
 }
 
 /* End of initialisation overlay */
-
+

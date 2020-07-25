@@ -99,6 +99,8 @@ get2:
          }
 bilge:
          zperr( "TIMEOUT",TRUE);
+      } else if (firstch==0x0D && Firstsec) {
+         continue;
       } else {
          zperr( "Bad header",TRUE);
       }
@@ -126,4 +128,4 @@ humbug:
 }
 
 /************************** END OF MODULE 8 *********************************/
-
+

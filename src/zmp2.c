@@ -17,31 +17,6 @@ int mread(char *buffer, int count, int timeout);
 unsigned mcharinp();
 static void clrbox();
 
-void fstat(fname,status)
-char *fname;
-struct stat *status;
-{
-   unsigned filelength();
-
-   setfcb(&Thefcb,fname);
-   status->records = filelength(&Thefcb);
-   getfirst(fname);
-   setfcb(&Thefcb,"????????.???");
-}
-
-unsigned filelength(fcbp)
-struct fcb *fcbp;
-{
-   int olduser;
-
-   bdos(CPMSDMA,CPMBUF);        /* set dma address */
-   olduser = getuid();          /* save this user number */
-   setuid(fcbp->uid);           /* go to file's user no. */
-   bdos(CPMCFS,fcbp);           /* compute file size */
-   setuid(olduser);             /* restore original */
-   return (fcbp->ranrec[1]<<8)|fcbp->ranrec[0];
-}
-
 int roundup(dividend,divisor)
 int dividend, divisor;
 {
@@ -367,4 +342,4 @@ int minprdy()
 }
 
 /*          End of MAIN module             */
-
+

@@ -19,6 +19,7 @@ extern int zmputs(char *);
 extern void statrep(long);
 extern int putsec(int,int);
 extern void mcharout(char);
+extern void setmodtime();
 
 extern int Tryzhdrtype;
 extern int Firstsec;
@@ -90,6 +91,8 @@ nxthdr:
             if (closeit()) {
                Tryzhdrtype = ZFERR;
                return NERROR;
+            } else {
+               setmodtime();
             }
             lreport(KBYTES,rxbytes);
             crcrept(Crc32);
@@ -182,4 +185,4 @@ moredata:
 }
 
 /************************** END OF MODULE 5 *********************************/
-
+

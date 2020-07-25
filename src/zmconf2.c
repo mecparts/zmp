@@ -15,15 +15,10 @@ extern char *alloc(int);
 extern int allocerror(void *);
 extern int chrin();
 extern void cls();
-extern int getline(char *,unsigned);
 extern void stndout();
 extern void stndend();
 extern void locate(int,int);
 extern void addu(char *,int,int);
-extern void wrerror(char *);
-
-static int cloadnos();
-static void cshownos();
 
 void setparity()
 {
@@ -70,7 +65,7 @@ void setstopbits()
    }
 }
 
-static void cshownos()
+void cshownos()
 {
    int i, j;
    char echo;
@@ -91,7 +86,7 @@ static void cshownos()
    }
 }
 
-static int cloadnos()
+int cloadnos()
 {
    int i,result;
    char dummy;
@@ -125,177 +120,5 @@ static int cloadnos()
    return result;
 }      
 
-void phonedit()
-{
-   int i, c, change;
-   char *answer;
-
-   cloadnos();
-   answer = Pathname;
-   for (;;) {
-      flush();
-      cshownos();
-      printf("\nEnter letter of phone number to change/enter,\n");
-      printf("or anything else to EXIT:  ");
-      c = chrin();
-      if (c>='a' && c<='z') {
-         c = c - 'a' + 'A';
-      }
-      c = c - 'A';
-      if (c < 0 || c > 20) {
-         break;
-      }
-      change = TRUE;
-      flush();
-      printf("\n\t  Name:  %s\nEnter new name:  ",
-         Book[c].name);
-      if (getline(answer,18)) {
-         while (strlen(answer) < 17) {
-            strcat(answer," "); /* Pad with spaces */
-         }
-         strcpy(Book[c].name,answer);
-      }
-      printf("\n\t  Number:  %s\nEnter new number:  ",
-         Book[c].number);
-      if (getline(answer,18)) {
-         strcpy(Book[c].number,answer);
-      }
-      printf("\n\t  Bit rate:  %u0\nEnter new bit rate:  ",
-         Baudtable[Book[c].pbaudindex]);
-      if (getline(answer,18)) {
-         for (i = 0; i < 13; i++) {
-            if (atoi(answer)/10 == Baudtable[i]) {
-               Book[c].pbaudindex = i;
-               break;
-            }
-         }
-      }
-      printf("\n\t  Parity:  %c\nEnter new parity:  ",
-         Book[c].pparity);
-      if (getline(answer,18)) {
-         c = answer[0];
-         if (c>='a' && c<='z') {
-            c = c - 'a' + 'A';
-         }
-         Book[c].pparity = c;
-      }
-      printf("\n    Nr data bits:  %d\nEnter new number:  ",
-         Book[c].pdatabits);
-      if (getline(answer,18)) {
-         Book[c].pdatabits = atoi(answer);
-      }
-      printf("\n    Nr stop bits:  %d\nEnter new number:  ",
-         Book[c].pstopbits);
-      if (getline(answer,18)) {
-         Book[c].pstopbits = atoi(answer);
-      }
-      printf("\n\t\tDuplex:  %s\nEnter (H)alf or (F)ull:  ",
-         Book[c].echo?"Half":"Full");
-      if (getline(answer,18)) {
-         c = answer[0];
-         Book[c].echo = (c == 'H') || (c == 'h');
-      }
-   }
-   flush();
-   cls();
-   if (Book != (struct phonebook *)MEMORY_FULL) {
-      free(Book);
-   }
-}
-
-void edit()
-{
-   int i;
-   char *buffer;
-   char key;
-
-   buffer = Pathname;
-   do {
-      cls();
-      flush();
-      printf("\r\t\t");
-      stndout();
-      puts(" KEYPAD MACRO LIST \n");
-      stndend();
-      for (i=0; i<10; i++) {
-         printf("%d - %s\n",i,KbMacro[i]);
-      }
-      printf("\nPress key of macro to edit, esc to quit:  ");
-      key = (char)chrin();
-      if (isdigit(key)) {
-         i = key-'0';
-         flush();
-         puts("\nIf you want the macro to end with a RETURN,");
-         puts("add a '\041' to the end of your entry (20 chars. max).\n");
-         printf("Old Macro:  ");
-         puts(KbMacro[i]);
-         printf("\nNew Macro:  ");
-         if (getline(buffer,21)) {
-            strcpy(KbMacro[i],buffer);
-         }
-      }
-   } while (isdigit(key));
-   flush();
-}
-
-void savephone()
-{
-   int i;
-   FILE *fd;
-
-   strcpy(Pathname,Phonefile);
-   addu(Pathname,Overdrive,Overuser);
-   fd = fopen(Pathname,"w");
-   if (fd) {
-      printf("\nSaving Phone numbers...");
-      for (i = 0; i < 20; i++) {
-         fprintf(fd,"%s %s %d %c %d %d %d\n",
-            Book[i].name,
-            Book[i].number,
-            Book[i].pbaudindex,
-            Book[i].pparity,
-            Book[i].pdatabits,
-            Book[i].pstopbits,
-            Book[i].echo);
-      }
-      fclose(fd);
-      printf("Successful.\n");
-   } else {
-      wrerror(Phonefile);
-   }
-}
-
-void saveconfig()
-{
-   int i;
-   FILE *fd;
-
-   strcpy(Pathname,Cfgfile);
-   addu(Pathname,Overdrive,Overuser);
-   fd = fopen(Pathname,"w");
-   if (fd) {
-      printf("\n\nSaving Configuration...");
-      fprintf(fd,"%d %d %d %d %d\n",Crcflag,Wantfcs32,
-         XonXoff,Filter,ParityMask);
-      for (i = 0; i < 10; i++)
-         fprintf(fd,"%s\n",KbMacro[i]);
-      fprintf(fd,"%s\n%s\n%s\n",Modem.init,Modem.dialcmd,
-         Modem.dialsuffix);
-      fprintf(fd,"%s\n%s\n%s\n",Modem.connect,Modem.busy1,
-         Modem.busy2);
-      fprintf(fd,"%s\n%s\n%s\n",Modem.busy3,Modem.busy4,
-         Modem.hangup);
-      fprintf(fd,"%d %d\n",Modem.timeout,Modem.pause);
-      fprintf(fd,"%d %c %d %d\n",Line.baudindex,Line.parity,
-         Line.databits,Line.stopbits);
-      fprintf(fd,"%d %u %c %d %d\n",Zrwindow,Pbufsiz,Maxdrive,
-         Chardelay,Linedelay);
-      fclose(fd);
-      printf("Successful.\n");
-   } else {
-      wrerror(Cfgfile);
-   }
-}
-
 /************************* END OF ZMCONFIG MODULE 2 *************************/
-
+

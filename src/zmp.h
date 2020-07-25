@@ -320,7 +320,7 @@ EXTERN int Inhost
 ;
 #ifdef INIT
 char Version[41]
-=  "Version 1.5+/- -- 21 July 2020"	/* version number for ZMP */
+=  "Version 1.5+/- -- 24 July 2020"	/* version number for ZMP */
 /*  ^_____________________________________^		Maximum length! */
 #endif
 ;
@@ -452,10 +452,18 @@ EXTERN int Wantfcs32
 #endif
 ;
 
+EXTERN int ZsDos
+#ifdef MAIN
+ = TRUE
+#endif
+;
+
+EXTERN unsigned long FileModTime;
+
 struct stat {
 	char fname[9];
 	char fext[4];
-	int dcode;
+	unsigned long modtime;
 	int records;
 };
 
@@ -497,4 +505,4 @@ struct dpb {
 EXTERN char **Pathlist;
 
 /******************************* end of zmp.h ******************************/
-
+

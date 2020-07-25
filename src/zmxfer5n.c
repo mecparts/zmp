@@ -22,26 +22,28 @@ int closeit()
    int length;
 
    status = OK;
-   if (Cpindex) {
-      length = 128*roundup(Cpindex,128);
+   if (Fd != -1) {
+      if (Cpindex) {
+         length = 128*roundup(Cpindex,128);
 
-      status = ((write(Fd,Cpmbuf,length) == length) ? OK : NERROR);
+         status = ((write(Fd,Cpmbuf,length) == length) ? OK : NERROR);
 
-      Cpindex = 0;
-      Rxptr = Cpmbuf;
-   }
-   if (status == NERROR) {
-      zperr("Disk write error",TRUE);
-   }
+         Cpindex = 0;
+         Rxptr = Cpmbuf;
+      }
+      if (status == NERROR) {
+         zperr("Disk write error",TRUE);
+      }
 
-   if (close(Fd)==NERROR) {
-      Fd = -1;
+      if (close(Fd)==NERROR) {
+         Fd = -1;
 
-      zperr("File close error",TRUE);
-      return NERROR;
+         zperr("File close error",TRUE);
+         return NERROR;
+      }
    }
    return status;
 }
 
 /************************** END OF MODULE 5 *********************************/
-
+

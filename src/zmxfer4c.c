@@ -15,6 +15,7 @@ extern int putsec(int,int);
 extern void sreport(int,long);
 extern void zperr(char *,int);
 extern int closeit();
+extern void setmodtime();
 
 extern int Firstsec;
 extern int Crcflag;
@@ -59,6 +60,8 @@ int wcrx()
       } else if (sectcurr==WCEOT) {
          if (closeit()) {
             return NERROR;
+         } else {
+            setmodtime();
          }
          mcharout(ACK);
          return OK;
@@ -72,4 +75,4 @@ int wcrx()
 }
 
 /************************** END OF MODULE 8 *********************************/
-
+

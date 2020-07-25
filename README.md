@@ -22,6 +22,7 @@ compiler would accept (and fixing issues in the compiler's libraries - how
 did anyone actually get any work done with v3.09 back in the day?) I changed
 a few things that niggled at me:
 
+* Datestamps transferred in Y/Zmodem transfers.
 * Fixed issues displaying baud rate and send times when the baud rate
   is > 19.2K.
 * Removed superfluous CR sent to the remote end when a connection was
@@ -36,7 +37,14 @@ run and it's to a point where I've replaced the original ZMP with this one
 on my systems. But I'm still finding things to look at (and then there's
 the bugs that Ron Murray fixed between the version of the source code he
 released and the version that was used to produce the ZMP 1.5 binaries...).
-There's still lots of work to be done in the Z3 aliases that were supposed
-to be used to compile the source (some work fine, some not so much). But
-I was sufficiently far enough along that I wanted/needed to start getting
-snapshots of my progress, hence its inclusion here on Github.
+
+The Z3 aliases are now able to build the COM and OVR files. ZMCOMPIL.COM
+will build ZMPX.COM. OVRCOMP.COM will build all the OVR files.
+
+*Probably!* I was able to get everything to build on a 62K system, which
+has a far larger TPA than most Z-systems can manage (or at least what
+they could manage back in the day).
+
+Modified/new system files for Hi Tech C are included: cpm.h, time.h,
+libc.lib, memset.c, and mktime.c.
+

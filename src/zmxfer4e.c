@@ -16,6 +16,7 @@ extern void report(int,char *);
 extern char *ttime(long);
 extern void checkpath(char *);
 extern void testexist(char *);
+extern void zperr(char *,int);
 
 extern int Fd;
 
@@ -33,6 +34,7 @@ char *name;
 
    clrreports();
    p = name + 1 + strlen(name);
+   FileModTime = 0;
    if (*p) {   /* file coming from Unix or DOS system */
       ap = p;
       while ((c = *p) && (c != ' ')) /* find first space or null */
@@ -42,7 +44,19 @@ char *name;
       /* ap now points to a long integer in ascii */
       report(FILESIZE,ap);
       report(SENDTIME,ttime(atol(ap)));
+      while (*ap && *ap != ' ') { /* skip over filesize */
+         ++ap;
+      }
+      ++ap; /* if *ap is non zero, ap is pointing at the file mod timestamp */
+      if( *ap ) {
+         while (*ap >= '0' && *ap <= '7') {
+            FileModTime <<= 3;
+            FileModTime += *ap -'0';
+            ++ap;
+         }
+      }
    }
+   
    strcpy(Pathname, name);
    checkpath(Pathname);
 
@@ -54,4 +68,4 @@ char *name;
 }
 
 /************************** END OF MODULE 8 *********************************/
-
+

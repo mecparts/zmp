@@ -1,3 +1,3 @@
--c3700h -ptext=3700h,data -ozmconfig.ovr -mzmconfig.map zmconfig.obj \
-zmconf2.obj main.obj a:libx.lib a:libc.lib
-
+-c40cah -ptext=40cah,data -ozmconfig.ovr -mzmconfig.map zmconfig.obj \
+zmconf2.obj zmconf3.obj zmconf4.obj main.obj a:libx.lib a:libc.lib
+

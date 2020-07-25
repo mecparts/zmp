@@ -23,6 +23,8 @@ extern void edit();
 extern void savephone();
 extern void saveconfig();
 
+extern int time_zone;
+
 static void settransfer();
 static void setsys();
 static void setmodem();
@@ -192,6 +194,7 @@ static void setsys()
       printf("\tM - Set maximum drive on system - now %c:\n",Maxdrive);
       printf("\tP - Toggle T-mode parity bit removal - now %s\n",
          ParityMask ? "ON" : "OFF");
+      printf("\tT - Set minutes west of UTC - now %d\n",time_zone);
       printf("\tZ - Exit\n\n");
       printf("   Select:  ");
       c = chrin();
@@ -216,6 +219,10 @@ static void setsys()
 
          case 'P':
             ParityMask = !ParityMask;
+            break;
+
+         case 'T':
+            gnewint("minutes west of UTC",&time_zone);
             break;
 
          case ESC:
@@ -429,4 +436,4 @@ unsigned value;
 }
 
 /********************** END OF ZMCONFIG MODULE 1 ****************************/
-
+

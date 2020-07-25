@@ -2,6 +2,7 @@
 Hi Tech C and fixes a few things that had niggled at me for
 awhile (some, a few decades):
 
+* Datestamps transferred in Y/Zmodem transfers.
 * Fixed issues displaying baud rate and send times when the
   baud rate is > 19.2K.
 * Removed superfluous CR sent to the remote end when a
@@ -20,5 +21,5 @@ version in ZMP15.LBR. So, to quote the original author,
 new one with the config option.  There have again been changes to 
 the format of this file."
 
-July 21, 2020
+July 24, 2020
 
