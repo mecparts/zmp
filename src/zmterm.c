@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <cpm.h>
+#include <time.h>
 #include "zmp.h"
 
 #define autolen 6      /* length of ZRQINIT required for auto rx */
@@ -226,14 +227,35 @@ int c;
 static void prompt(clear)
 short clear;
 {
+   time_t tt;
+   struct tm *ptm;
+   char ampm;
+   int hh;
+   
    if (clear) {
       cls();
    }
    printf("\rTerminal Mode: ESC H for help.\t\t");
    printf(
-   	"Drive %c%d:   %u0 baud\n",
-   	Currdrive,Curruser,
-   	Baudtable[Current.cbaudindex]);
+      "Drive %c%d:   %u0 baud",
+      Currdrive,Curruser,
+      Baudtable[Current.cbaudindex]);
+   if( ZsDos ) {
+      tt = time(NULL);
+      ptm = gmtime(&tt);
+      hh = ptm->tm_hour;
+      if (hh < 12) {
+        ampm = 'A';
+      } else {
+        ampm = 'P';
+        hh -= 12;
+      }
+      if (!hh) {
+         hh = 12;
+      }
+      printf("\t\t%2d:%02d%cM",hh,ptm->tm_min,ampm);
+   }
+   putchar('\n');
 }
 
 static void toprinter(i)
@@ -334,4 +356,4 @@ static void adjustprthead()
 }
 
 /*         End of TERM module File 1         */
-
+
