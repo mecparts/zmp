@@ -15,7 +15,7 @@ extern int getnak();
 extern void deldrive(char *);
 extern int zsendfile(char *,int);
 extern int wcputsec(char *,int,int);
-char *ttime(long);
+extern char *ttime(long);
 extern void zperr(char *,int);
 
 extern char *Txbuf;
@@ -69,4 +69,4 @@ char *name;
 }
 
 /************************** END OF MODULE 7 *********************************/
-
+
