@@ -91,15 +91,21 @@ int dial()
             n = -1;
             strcpy(number,Modem.dialcmd);
             if ((status == OK) && (j=strlen(p))==1) {
-               if (isalpha(n = *p)) {
+               n = *p;
+               if (isalpha(n)) {
                   n = toupper(n) - 'A';
                   p = Book[n].number;
-                  setace(n);
-                  strcat(number,p);
-                  strcat(number,Modem.dialsuffix);
-                  mstrout(number,FALSE);
-                  p = Book[n].name;
-                  printf("\nDialing %s...", p);
+                  if (*p != '_') {
+                     setace(n);
+                     strcat(number,p);
+                     strcat(number,Modem.dialsuffix);
+                     mstrout(number,FALSE);
+                     p = Book[n].name;
+                     printf("\nDialing %s...", p);
+                  } else {
+                     printf("\nInvalid Number\n");
+                     goto abort;
+                  }
                } else {
                   printf("\nInvalid Number\n");
                   goto abort;
