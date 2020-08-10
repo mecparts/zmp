@@ -89,8 +89,7 @@ void phonedit()
          printf("\n\t\tDuplex:  %s\nEnter (H)alf or (F)ull:  ",
             Book[c].echo?"Half":"Full");
          if (getline(answer,18)) {
-            c = answer[0];
-            Book[c].echo = (c == 'H') || (c == 'h');
+            Book[c].echo = answer[0] == 'H' || answer[0] == 'h';
          }
       } else {
          strcpy(Book[c].number,"_________________");
@@ -136,4 +135,4 @@ void savephone()
 }
 
 /************************* END OF ZMCONFIG MODULE 3 *************************/
-
+
