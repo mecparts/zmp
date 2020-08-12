@@ -168,7 +168,6 @@ moredata:
                      return NERROR; /* Don't write to disk */
                   }
                   rxbytes += Rxcount;
-                  statrep(rxbytes);
                   goto moredata;
 
                case GOTCRCE:
@@ -177,7 +176,6 @@ moredata:
                      return NERROR; /* Don't write to disk */
                   }
                   rxbytes += Rxcount;
-                  statrep(rxbytes);
                   goto nxthdr;
             }
       }
@@ -185,4 +183,4 @@ moredata:
 }
 
 /************************** END OF MODULE 5 *********************************/
-
+
