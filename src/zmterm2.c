@@ -199,7 +199,7 @@ void docmd()
          case 'I':
             initace(Current.cbaudindex,Current.cparity,
                Current.cdatabits,Current.cstopbits);
-            mstrout("\n\n",FALSE);
+            mstrout("\r\r",FALSE);
             mstrout(Modem.init,FALSE);
             while (readline(10) != TIMEOUT);
             break;

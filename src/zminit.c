@@ -77,7 +77,7 @@ static void title()
 static void initializemodem()
 {
    resetace();
-   mstrout("\n\n",FALSE);
+   mstrout("\r\r",FALSE);
    mstrout(Modem.init,FALSE);
    while(readline(10) != TIMEOUT);   /* gobble echoed characters */
 }
