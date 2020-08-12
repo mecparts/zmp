@@ -19,12 +19,20 @@ extern char *Rxptr;
 int closeit()
 {  
    static int status;
-   int length;
+   int length, padding;
 
    status = OK;
    if (Fd != -1) {
       if (Cpindex) {
          length = 128*roundup(Cpindex,128);
+         /* pad last sector with ^Z if necessary  */
+         /* otherwise text files from Linux boxes */
+         /* don't end properly                    */
+         padding = length - Cpindex;
+         while (padding > 0) {
+            *Rxptr++ = CTRLZ;
+            --padding;
+         }
 
          status = ((write(Fd,Cpmbuf,length) == length) ? OK : NERROR);
 
@@ -46,4 +54,4 @@ int closeit()
 }
 
 /************************** END OF MODULE 5 *********************************/
-
+
