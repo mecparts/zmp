@@ -92,7 +92,7 @@ int dial()
             strcpy(number,Modem.dialcmd);
             if ((status == OK) && (j=strlen(p))==1) {
                n = *p;
-               if (isalpha(n)) {
+               if (isalpha(n) && toupper(n)<='T' ) {
                   n = toupper(n) - 'A';
                   p = Book[n].number;
                   if (*p != '_') {
@@ -230,4 +230,4 @@ static int loadnos()
 }
 /*         End of TERM module            */
 /*         End of TERM module File 1         */
-
+

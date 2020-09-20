@@ -12,6 +12,7 @@ awhile (some, a few decades):
 * \ escapes ! and ~ so those literal characters can be used in
   keyboard macros.
 * Long distance access code has been removed.
+* Quick dialing letters limited to A-T.
 
      This version, based on the version of the source code in
 ZMP-SRC.LBR, is missing a few things that made it into the later
@@ -21,5 +22,5 @@ version in ZMP15.LBR. So, to quote the original author,
 new one with the config option.  There have again been changes to 
 the format of this file."
 
-July 24, 2020
+Sept 19, 2020
 
