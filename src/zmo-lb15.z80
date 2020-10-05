@@ -1,0 +1,644 @@
+	abs
+;
+;	Overlay to ZMP (Z-Modem Program), for the Ampro LB/Z80
+;		(Z80 SIO and CTC - interrupt driven BIOS v4.1)
+;		Ampro BIOS calls used for modem I/O, setup, and breaks
+;
+;	Name:  zmo-lb15.z80
+;
+;	Dated:  29 Feb 2020
+;
+;	Written by -
+;	  Wayne Hortensius, c/o CRS, 416-629-0138, Toronto, Ontario, Canada
+;
+false	equ	0
+true	equ	0ffffh
+;
+;Set the following two equates to the drive and user area which will contain
+;   ZMP's .OVR files, .CFG file, .FON file and .HLP file.  Set both to zero
+;   (null) to locate them on the drive from which ZMP was invoked.
+
+overdrive	equ	'A'	; Drive to find overlay files on ('A'-'P')
+overuser	equ	1	; User area to find files
+
+;------------------------------------------------------------------------------
+
+;User-set variables:
+clkspd	equ	4		; Processor clock speed in MHz
+mspeed	equ	003ch		; Current baud rate: as used by BYE etc
+				; This MUST be the same as Mspeed in
+				; ZMP.H
+
+CTCA1	equ	3
+SIOBVAL	equ	18		;\
+SIOBR3	equ	SIOBVAL+5	; offsets within BIOS I/O init table
+SIOBR4	equ	SIOBVAL+1	;
+SIOBR5	equ	SIOBVAL+3	;/
+
+ctca3	equ	070h		; CTC hardware 8mS timer port
+userdef	equ	00145h		; origin of this overlay: get this value
+				; from the .SYM file produced when ZMP.COM
+				; is linked
+ovsize	equ	0400h		; max size of this overlay
+
+	org	userdef
+
+so	equ	'N'-'@'
+ctrlq	equ	11h
+cr	equ	0dh
+lf	equ	0ah
+esc	equ	1bh
+bdos	equ	5
+
+;Jump table for the overlay: do NOT change this
+
+jump_tab:
+	jp	scrnpr		; screen print
+	jp	mrd		; modem read with timeout
+	jp	mchin		; get a character from modem
+	jp	mchout		; send a character to the modem
+	jp	mordy		; test for tx buffer empty
+	jp	mirdy		; test for character received
+	jp	sndbrk		; send break
+	jp	cursadd		; cursor addressing
+	jp	cls		; clear screen
+	jp	invon		; inverse video on
+	jp	invoff		; inverse video off
+	jp	hide		; hide cursor
+	jp	show		; show cursor
+	jp	savecu		; save cursor position
+	jp	rescu		; restore cursor position
+	jp	mint		; service modem interrupt
+	jp	invec		; initialise interrupt vectors
+	jp	dinvec		; de-initialise interrupt vectors
+	jp	mdmerr		; test uart flags for error
+	jp	dtron		; turn DTR on
+	jp	dtroff		; turn DTR OFF
+	jp	init		; initialise uart
+	jp	wait		; wait seconds
+	jp	mswait		; wait milliseconds
+	jp	userin		; user-defined entry routine
+	jp	userout		; user-defined exit routine
+	jp	getvars		; get system variables
+	jp	setport		; choose one of two (not implemented)
+
+; Spare jumps for compatibility with future versions
+
+	jp	spare		; spare for later use
+	jp	spare		; spare for later use
+	jp	spare		; spare for later use
+	jp	spare		; spare for later use
+	jp	spare		; spare for later use
+
+; Main code starts here
+;
+codebgn	equ	$
+;
+;Screen print function
+scrnpr:
+spare:
+	ret
+
+; User-defined entry routine
+userin:
+	ld	hl,(1)		; get BIOS page
+	ld	l,15H		; BIOS READER call offset
+	ld	(RDRv),hl
+	ld	l,12H		; BIOS PUNCH call offset
+	ld	(PUNCHv),hl
+	ld	l,39H		; BIOS IOINIT call offset
+	ld	(IOINIv),hl
+	ld	l,40H		; BIOS IOTABLE offset
+	ld	(IOTABv),hl
+	ld	l,33H		; BIOS GETTBL call offset
+	ld	de,userin1
+	push	de
+	jp	(hl)		; get next table address in HL
+userin1:
+	cp	41		; using at least v4.1 BIOS?
+	jr	nc,userin2	; yep, no problem
+	call	print
+	db	cr,lf,cr,lf
+	db	'Minimum Ampro BIOS for this program is v4.1',cr,lf,0
+	rst	0		; boot...
+userin2:
+	ld	de,0FH		; offset of BIOS TTYIST call
+	add	hl,de
+	ld	(TTYIv),hl
+	ld	de,3
+	add	hl,de		; offset of BIOS TTYOST call
+	ld	(TTYOv),hl
+	add	hl,de		; offset of BIOS TTYBRK call
+	ld	(BRKv),hl
+	ret
+; User-defined exit routine
+userout:
+	ret
+
+;Get a character from the modem: return in HL
+; It is not necessary to test for status
+mchin:
+RDRv	equ	$+1
+	call	0
+	ld	l,a
+	ld	h,0
+	ret
+;
+;Send a character to the modem
+mchout:
+	ld	hl,2		; Get the character
+	add	hl,sp
+	ld	c,(hl)
+PUNCHv	equ	$+1
+mdmout:	call	0
+	ret			; done
+
+;Test for output ready: return TRUE (1) in HL if ok
+mordy:
+TTYOv	equ	$+1
+	call	0
+	ld	hl,0
+	ret	z
+	inc	l
+	ld	a,l
+	ret
+
+;Test for character at modem: return TRUE (1) in HL if so
+mirdy:
+TTYIv	equ	$+1
+	call	0
+	ld	hl,0
+	ret	z
+	inc	l
+	ld	a,l
+	ret
+
+;Send a break to the modem: leave empty if your system can't do it
+sndbrk:
+BRKv	equ	$+1
+	jp	0
+
+;Test UART flags for error: return TRUE (1) in HL if error
+mdmerr:
+	ld	hl,0		; errors processed in BIOS
+	xor	a
+	ret			; modem error return
+
+
+;Turn DTR (and optionally RTS) ON.
+dtron:				; DTR not available on modem port,
+	ret			; RTS handled internal to BIOS
+
+;Turn DTR ( and RTS?) OFF
+dtroff:			 	; DTR not available on modem port,
+	ret			; RTS handled internal to BIOS
+
+;Initialise the UART
+initmsg:	db	'init',cr,lf,0
+init:
+	ld	hl,2		; get parameters
+	add	hl,sp
+	ld	a,(hl)
+	ld	(brate),a
+	inc	hl
+	inc	hl		; bump for next
+	ld	a,(hl)		; get lo
+	and	5Fh		; Convert to upper case
+	ld	(parity),a	; parity
+	inc	hl
+	inc	hl		; bump for next
+	ld	a,(hl)		; get lo
+	and	0fh		; Make sure binary
+	ld	(data),a	; Save data bits
+	inc	hl
+	inc	hl		; bump for next
+	ld	a,(hl)		; get lo
+	and	0fh		; Make sure binary
+	ld	(stop),a	; stop bits
+initx:
+	push	ix		; save IX for Hitech C
+IOTABv	equ	$+2
+	ld	ix,0
+	ld	a,(stop)
+; -- set up # of stop bits
+	cp	2		; one or two stop bits?
+	di			; do interrupt while we're playing with
+	ld	a,(ix+SIOBR4)	; the IO table please
+	jr	z,init1		; 2 bits asked for 
+	res	3,a		; 1 bit - reset bit 3
+	set	2,a		; set bit 2
+	jr	init2
+init1:	or	00001100b	; 2 bits - set bits 2 and 3
+; -- set up parity
+init2:	and	11111100b	; stop bits set up, set parity (assume none)
+	ld	b,a
+	ld	a,(parity)
+	sub	'N'		; no parity (bits 0 & 1 reset)?
+	jr	z,init3
+	inc	b		; how about odd (bit 1 set)?
+	dec	a
+	jr	z,init3
+	inc	b		; even parity (bits 0 & 1 set)
+	inc	b
+init3:	ld	a,b
+	ld	(ix+SIOBR4),a
+; -- set up # of data bits
+	ld	a,(ix+SIOBR3)
+	ld	b,a
+	ld	a,(ix+SIOBR5)
+	ld	c,a
+	ld	a,(data)
+	cp	8
+	jr	z,init6		; 8 data bits
+init5:	res	7,b		; 7 data bits
+	res	6,c
+	jr	init7
+init6:	set	7,b		; 8 data bits
+	set	6,c
+init7:	set	6,b
+	set	5,c
+	ld	a,b
+	ld	(ix+SIOBR3),a
+	ld	a,c
+	ld	(ix+SIOBR5),a
+; -- set up baud rate
+	ld	hl,(brate)
+	ld	b,l
+	add	hl,hl
+	ld	de,baud_table
+	add	hl,de		; index into baud rate table
+	ld	a,(hl)		; fetch baud rate code
+	or	a
+	jr	nz,init8	; unsupported baud rate?
+	ld	a,(mspeed)
+	ld	l,a
+	ld	h,0
+	ld	(brate),hl
+	jr	initgo
+;
+init8:
+	ld	(ix+CTCA1),a
+	inc	hl
+	ld	a,(ix+SIOBR4)
+	and	00001111b
+	or	(hl)		; or in new baud rate divisor
+	ld	(ix+SIOBR4),a
+	ld	a,b
+	ld	(mspeed),a	; set new baud rate in low memory
+	ld	hl,baud_vstrs	; send baud rate change speed to WiFi modem
+init9:
+	ld	a,(hl)
+	or	a
+	jr	z,initgo	; end of table
+	inc	hl
+	cp	b
+	jr	z,init11	; baud # match
+init10:				; not a match
+	ld	a,(hl)		; skip ahead to next baud entry
+	inc	hl
+	or	a		; end of string?
+	jr	nz,init10
+	jr	init9		; try next baud #
+init11:
+	push	hl		; found matching baud #
+	ld	hl,baud_start	; send AT$SB=
+	call	mprint
+	pop	hl		; baud rate / 100
+	call	mprint
+	ld	hl,baud_end	; 00<cr>
+	call	mprint
+	ld	hl,1		; wait a second to let the string get
+	call	waithls		; to the modem (long enough even at 110b)
+; -- initialize Z80 SIO/DART
+initgo:
+IOINIv	equ	$+1
+	call	0		; initialize AMPRO I/O subsystem
+	pop	ix		; restore IX for Hitech C
+	ret
+; -- send string pointed to by HL to the modem
+mprint:
+	ld	a,(hl)
+	inc	hl
+	or	a
+	ret	z
+	push	hl
+	ld	c,a
+	call	mdmout
+	pop	hl
+	jr	mprint
+;
+; Baud rate factors, output to bauda to select baud rate
+; 2MHz / 64 (0c0h), 32 (080h), 16 (040h) / n
+;
+baud_table:
+	db	0,0		; 0 - 110b not supported
+	db	208,080h	; 1 - 300b
+	db	139,080h	; 2 - 450b
+	db	208,040h	; 3 - 600b
+	db	176,040h	; 4 - 710b
+	db	104,040h	; 5 - 1200b
+	db	52,040h		; 6 - 2400b
+	db	26,040h		; 7 - 4800b
+	db	13,040h		; 8 - 9600b
+	db	0,0		; 9 - 19.2Kb not supported
+	db	0,0		; 10 - 38.4Kb not supported
+	db	0,0		; 11 - 57.6Kb not supported
+	db	0,0		; 12 - 76.8Kb not supported
+baud_vstrs:
+	db	1,'30',0
+	db	2,'45',0
+	db	3,'60',0
+	db	4,'71',0
+	db	5,'120',0
+	db	6,'240',0
+	db	7,'480',0
+	db	8,'960',0
+	db	0
+baud_start:
+	db	'AT$SB=',0
+baud_end:
+	db	'0',cr,0
+;
+parity:	db	'N',0		; parity (will be 'N', 'E' or 'O')
+data:	db	8,0		; data bits (will be 7 or 8)
+stop:	db	1,0		; stop bits (will be 1 or 2)
+brate:	dw	5		; temp baud rate location
+;
+;****************************************************************************
+;Video terminal sequences: these are for VT-100: Modify as you wish
+;Cursor addressing:
+cursadd:
+	ld	hl,2		; get parameters
+	add	hl,sp
+	ex	de,hl
+	call	getparm		; in HL
+	inc	hl
+	ld	(row),hl	; row
+	call	getparm
+	inc	hl
+	ld	(col),hl	; column
+				; <== Insert your own code here
+				; using values in row and col
+	call	print
+	db	esc,'[',0
+	ld	a,(row)		; row first
+	ld	b,a
+	xor	a
+ca1:
+	add	a,1
+	daa
+	djnz	ca1
+	ld	(num),a
+	and	0f0h
+	jr	z,ca2
+	srl	a
+	srl	a
+	srl	a
+	srl	a
+	or	'0'
+	call	cout
+ca2:
+	ld	a,(num)
+	and	0fh
+	or	'0'
+	call	cout
+
+	ld	a,';'
+	call	cout
+
+	ld	a,(col)		; same for column
+	ld	b,a
+	xor	a
+ca3:
+	add	a,1
+	daa
+	djnz	ca3
+	ld	(num),a
+	and	0f0h
+	jr	z,ca4
+	srl	a
+	srl	a
+	srl	a
+	srl	a
+	or	'0'
+	call	cout
+ca4:
+	ld	a,(num)
+	and	0fh
+	or	'0'
+	call	cout
+	ld	a,'H'
+	call	cout
+				; <== end of your own code
+	ret
+
+row:	ds	2		; row
+col:	ds	2		; column
+num:	ds	1
+
+;Clear screen:
+cls:
+	call	print
+	db	esc,'[2J',0
+	ret
+
+;Inverse video on:
+invon:
+	call	print
+	DB	esc,'[7m',0		;SO String
+	ret
+
+;Inverse video off:
+invoff:
+	call	print
+	DB	esc,'[m',0		;SO String
+	ret
+
+;Turn off cursor:
+hide:
+	call	print
+	db	esc,'[?25l',0
+	ret
+
+;Turn on cursor:
+show:
+	call	print
+	db	esc,'[?25h',0
+	ret
+
+;Save cursor position:
+savecu:
+	ret
+
+;Restore cursor position:
+rescu:
+	ret
+
+;****************************************************************************
+
+;Service modem interrupt:
+mint:
+	ret			; my system doesn't need this
+
+;Initialise interrupt vectors:
+invec:
+	ret			; ditto
+
+;De-initialise interrupt vectors:
+dinvec:
+	ret			; ditto
+
+;****************** End of user-defined code ********************************
+; Don't change anything below this point. We needed some assembly language
+; stuff for speed, and this seemed like a good place to put it.
+
+;Modem character test for 100 ms
+mrd:
+	ld	hl,1
+	ld	b,13		; number of times to wait for it to change
+	in	a,(ctca3)	; get current value of 8mS counter
+mrd1:	ld	c,a		; update timer check value
+mrd2:	exx			; save BC,DE,HL
+	call	mirdy		; character at modem?
+	exx			; restore BC,DE,HL
+	jr	nz,mrd3		; yes, exit
+	in	a,(ctca3)	; check counter that changes every 8mS
+	cp	c
+	jr	z,mrd2
+	djnz	mrd1		; loop for 13 times
+	dec	l		; none there, result=0
+mrd3:
+	ld	a,l
+	ret
+;
+; Inline print routine: destroys A and HL
+;
+print:
+	ex	(sp),hl		; get address of string
+ploop:
+	ld	a,(hl)		; get next
+	inc	hl		; bump pointer
+	or	a		; done if zero
+	jr	z,pdone
+	call	cout		; else print
+	jr	ploop		; and loop
+pdone:
+	ex	(sp),hl		; restore return address
+	ret			; and quit
+
+;
+;Output a character in A to the console
+;
+cout:
+	push	bc		; save regs
+	push	de
+	push	hl
+	ld	e,a		; Save the character to E for BDOS routine
+	ld	c,2		; BDOS conout routine
+	call	bdos		; print it
+	pop	hl
+	pop	de
+	pop	bc
+	ret
+
+;Wait(seconds)
+wait:
+	ld	hl,2
+	add	hl,sp
+	ex	de,hl		; get delay size
+	call	getparm
+				; fall thru to..
+;Wait seconds in HL
+waithls:
+	push	bc		; save bc
+	push	de		; de
+	push	ix		; and ix
+	ld	ix,0		; then point ix to 0
+				; so we don't upset memory-mapped i/o
+
+;Calculate values for loop constants. Need to have two loops to avoid
+;   16-bit overflow with clock speeds above 9 MHz.
+
+outerval	equ	(clkspd	/ 10) +	1
+innerval	equ	(6667 /	outerval) * clkspd
+
+wait10:
+	ld	b,outerval
+
+wait11:
+	ld	de,innerval
+
+wait12:
+	bit	0,(ix)		; time-wasters
+	bit	0,(ix)
+	bit	0,(ix)		; 20 T-states each
+	bit	0,(ix)
+	bit	0,(ix)
+	bit	0,(ix)
+	dec	de
+	ld	a,e
+	ld	a,d
+	or	e
+	jr	nz,wait12	; 150 T-states per inner loop
+	djnz	wait11		; decrement outer loop
+	dec	hl		; ok, decrement count in hl
+	ld	a,h
+	or	l
+	jr	nz,wait10
+	pop	ix		; done -- restore ix
+	pop	de		; de
+	pop	bc		; and bc
+	ret
+
+;Wait milliseconds
+mswait:
+	ld	hl,2
+	add	hl,sp
+	ex	de,hl		; get delay size
+	call	getparm
+				; fall thru to..
+;Wait milliseconds in HL
+waithlms:
+	push	de
+w1ms0:
+	ld	de,39 *	clkspd
+w1ms1:
+	dec	de
+	ld	a,d
+	or	e
+	jr	nz,w1ms1
+	dec	hl
+	ld	a,h
+	or	l
+	jr	nz,w1ms0
+	pop	de
+	ret
+
+;Get next parameter from (de) into hl
+getparm:
+	ex	de,hl		; get address into hl
+	ld	e,(hl)		; get lo
+	inc	hl
+	ld	d,(hl)		; then hi
+	inc	hl		; bump for next
+	ex	de,hl		; result in hl, address still in de
+	ret
+
+;Get address of user-defined variables
+
+getvars:
+	ld	hl,uservars
+	ret
+
+uservars:
+	dw	overdrive	; .OVR etc. drive/user
+	dw	overuser
+setport:
+	ret
+
+	 if	($ - codebgn) > ovsize
+toobig:	jp	errval		; Overlay too large!
+	 endif
+
+	end
+
