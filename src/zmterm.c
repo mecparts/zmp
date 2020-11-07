@@ -33,7 +33,7 @@ static void adjustprthead();
 ovmain()
 {
    short mdmdata, dolabel, keycount, keypoint;
-   short lastkey = '\0', fkey, autopos;
+   short lastkey = '\0', fkey, autopos, escwait;
    char keybuf[25];
    static char autoseq[] = { '*','*',CTRLX,'B','0','0' };
    char kbdata;
@@ -79,7 +79,24 @@ ovmain()
             literal = FALSE;
          }
       } else {
-         kbdata = getch();   /* if none, any at keyboard */
+         kbdata = getch();      /* if none, any at keyboard      */
+         if (kbdata == ESC) {   /* if another key follows an ESC */
+            escwait = 5;        /* within 5ms, it's a keyboard   */
+            do {                /* cursor or function key - just */
+               kbdata = getch();/* send it                       */
+               if (!kbdata) {
+                 mswait(1);
+               }
+            } while (!kbdata && --escwait > 0);       
+            if (kbdata) {       /* keyboard cursor/function key */
+               mcharout(ESC);   /* send ESC right now and let   */
+               if (!FDx) {      /* ZMP see next char in sequence*/
+                  prtchr(ESC);
+               }
+            } else {
+               kbdata = ESC;    /* if no next char, normal ZMP  */
+            }                   /* ESC processing               */
+         }
       }
       if (kbdata)  {
          if (lastkey == ESC) {
@@ -356,4 +373,4 @@ static void adjustprthead()
 }
 
 /*         End of TERM module File 1         */
-
+
