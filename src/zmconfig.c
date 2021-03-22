@@ -414,7 +414,7 @@ static void setbaud()
       printf("\nEnter default modem bit rate:  ");
       if (!(getline(buffer,6)))
          break;
-      baud = (unsigned)atol(buffer)/10;
+      baud = (unsigned)(atol(buffer)/10);
       printf("\n");
    } while (!goodbaud(baud));
 }
@@ -425,7 +425,7 @@ unsigned value;
    int i;
    
    for (i = 0; i < 14; i++) {
-      if (value/10 == Baudtable[i]) {
+      if (value == Baudtable[i]) {
          Line.baudindex = i;
          return TRUE;
       }
@@ -436,4 +436,4 @@ unsigned value;
 }
 
 /********************** END OF ZMCONFIG MODULE 1 ****************************/
-
+
