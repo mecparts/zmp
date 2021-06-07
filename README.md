@@ -23,12 +23,15 @@ did anyone actually get any work done with v3.09 back in the day?) I changed
 a few things that niggled at me:
 
 * Datestamps transferred in Y/Zmodem transfers.
+* Fixed long filename conversions on Y/Zmodem transfers.
 * Fixed issues displaying baud rate and send times when the baud rate
   is > 19.2K.
 * Removed superfluous CR sent to the remote end when a connection was
   established, which was a pita when connecting to a Linux box.
 * In keyboard macros, ! translates to a CR now, not CR/LF.
 * \ escapes ! and ~ so those literal characters can be used in keyboard macros.
+* Long distance access code has been removed.
+* Quick dialing letters limited to A-T.
 
 ## Status
 
