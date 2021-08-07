@@ -1,3 +1,3 @@
--c40cah -ptext=40cah,data -ozmterm.ovr -mzmterm.map zmterm.obj \
+-c40d2h -ptext=40d2h,data -ozmterm.ovr -mzmterm.map zmterm.obj \
 zmterm2.obj zmterm3.obj zmterm4.obj main.obj libc.lib
 

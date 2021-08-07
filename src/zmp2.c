@@ -267,22 +267,22 @@ void box()          /* put box on screen for file transfer */
    };
 
    locate(TR,LC);
-   putchar(UL);
+   bios(BIOS_CONOUT,UL);
    for (i = 1; i < WD-1; i++) {
-      putchar(HORIZ);
+      bios(BIOS_CONOUT,HORIZ);
    }
-   putchar(UR);
+   bios(BIOS_CONOUT,UR);
    locate(BR,LC);
-   putchar(LL);
+   bios(BIOS_CONOUT,LL);
    for (i = 1; i < WD-1; i++) {
-      putchar(HORIZ);
+      bios(BIOS_CONOUT,HORIZ);
    }
-   putchar(LR);
+   bios(BIOS_CONOUT,LR);
    for (i = 1; i < HT-1; i++) {
       locate(TR+i,LC);
-      putchar(VERT);
+      bios(BIOS_CONOUT,VERT);
       locate(TR+i,RC);
-      putchar(VERT);
+      bios(BIOS_CONOUT,VERT);
    }
    clrbox();
    for (i=1; i<11; i++) {
@@ -342,4 +342,4 @@ int minprdy()
 }
 
 /*          End of MAIN module             */
-
+
