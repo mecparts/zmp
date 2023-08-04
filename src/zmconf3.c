@@ -41,7 +41,7 @@ void phonedit()
       }
       change = TRUE;
       flush();
-      printf("\n\t  Name:  %s\nEnter new name:  ",
+      printf("\n\t\t  Name:  %s\n\tEnter new name:  ",
          Book[c].name);
       if (getline(answer,18)) {
          pad[1] = '\000';
@@ -56,32 +56,32 @@ void phonedit()
          strcpy(Book[c].name,answer);
       }
       if (answer[0] != '_') {
-         printf("\n\t  Number:  %s\nEnter new number:  ",
+         printf("\n\t\tNumber:  %s\n      Enter new number:  ",
            Book[c].number);
          if (getline(answer,18)) {
             strcpy(Book[c].number,answer);
          }
-         printf("\n\t  Bit rate:  %u0\nEnter new bit rate:  ",
+         printf("\n\t     Baud rate:  %u0\n   Enter new baud rate:  ",
             Baudtable[Book[c].pbaudindex]);
          if (getline(answer,18)) {
             for (i = 0; i < 13; i++) {
-               if (atoi(answer)/10 == Baudtable[i]) {
+               if (atol(answer)/10 == Baudtable[i]) {
                   Book[c].pbaudindex = i;
                   break;
                }
             }
          }
-         printf("\n\t  Parity:  %c\nEnter new parity:  ",
+         printf("\n\t\tParity:  %c\n      Enter new parity:  ",
             Book[c].pparity);
          if (getline(answer,18)) {
             Book[c].pparity = toupper(answer[0]);
          }
-         printf("\n    Nr data bits:  %d\nEnter new number:  ",
+         printf("\n\t   # data bits:  %d\n      Enter new number:  ",
             Book[c].pdatabits);
          if (getline(answer,18)) {
             Book[c].pdatabits = atoi(answer);
          }
-         printf("\n    Nr stop bits:  %d\nEnter new number:  ",
+         printf("\n\t   # stop bits:  %d\n      Enter new number:  ",
             Book[c].pstopbits);
          if (getline(answer,18)) {
             Book[c].pstopbits = atoi(answer);
@@ -135,4 +135,4 @@ void savephone()
 }
 
 /************************* END OF ZMCONFIG MODULE 3 *************************/
-
+

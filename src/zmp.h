@@ -321,6 +321,7 @@ EXTERN int Inhost
 #ifdef INIT
 char Version[41]
 =  "Version 1.5+/- -- 24 July 2020"	/* version number for ZMP */
+=  " Version 1.5+/- -- 4 Aug 2023 "	/* version number for ZMP */
 /*  ^_____________________________________^		Maximum length! */
 #endif
 ;
