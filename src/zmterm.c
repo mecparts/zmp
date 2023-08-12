@@ -32,7 +32,7 @@ static void adjustprthead();
 
 ovmain()
 {
-   short mdmdata, dolabel, keycount, keypoint;
+   short mdmdata, dolabel, keycount, keypoint, keywait;
    short lastkey = '\0', fkey, autopos, escwait;
    char keybuf[25];
    static char autoseq[] = { '*','*',CTRLX,'B','0','0' };
@@ -50,15 +50,21 @@ ovmain()
    }
    startcapture();
    autopos = keycount = 0;      /* no remote xfer, no keys in buffer */
+   keywait = 0;
    Zmodem = FALSE;              /* ensure we don't auto zmodem */
    purgeline();                 /* get rid of any junk */
    literal = FALSE;
 
    /* Main loop: */
    for (;;) {
-      if (keycount) {           /* get any buffered keys */
+      kbdata = '\0';
+      if (keywait) {
+         --keywait;
+         mswait(1);
+      } else if (keycount) {           /* get any buffered keys */
          kbdata = keybuf[keypoint++];
          keycount--;
+         keywait = 25;
          if (kbdata == '\\') {
             if (literal) {
                literal = FALSE;
@@ -73,12 +79,13 @@ ovmain()
             literal = FALSE;
          } else if (kbdata == WAITASEC) {
             if (!literal) {
-               wait(1);            /* handle pause */
+               keywait = 1000;     /* handle pause */
                kbdata = '\0';      /* that's it for this loop */
             }
             literal = FALSE;
          }
-      } else {
+      }                         /* end of function keys */  
+      if (!kbdata) {
          kbdata = getch();      /* if none, any at keyboard      */
          if (kbdata == ESC) {   /* if another key follows an ESC */
             escwait = 5;        /* within 5ms, it's a keyboard   */
@@ -373,4 +380,4 @@ static void adjustprthead()
 }
 
 /*         End of TERM module File 1         */
-
+

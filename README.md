@@ -29,17 +29,23 @@ a few things that niggled at me:
 * Removed superfluous CR sent to the remote end when a connection was
   established, which was a pita when connecting to a Linux box.
 * In keyboard macros, ! translates to a CR now, not CR/LF.
-* \ escapes ! and ~ so those literal characters can be used in keyboard macros.
+* \ escapes ! and ~ so those literal characters can be used in
+  keyboard macros.
+* Waits in keyboard macros now allow characters from the modem to
+  be handled.
+* Keys in keyboard macros now have 25ms waits between them as to
+  not overrun the remove system.
 * Long distance access code has been removed.
 * Quick dialing letters limited to A-T.
 
 ## Status
 
-This is very much a work in progress. I have gotten it to compile, link and
-run and it's to a point where I've replaced the original ZMP with this one
-on my systems. But I'm still finding things to look at (and then there's
-the bugs that Ron Murray fixed between the version of the source code he
-released and the version that was used to produce the ZMP 1.5 binaries...).
+It's pretty much done. I have gotten it to compile, link and run and
+I've been using it on my CP/M systems for years. From time to time I'll
+still find things to look at (and then there's the bugs that Ron Murray
+fixed between the version of the source code he released and the version
+that was used to produce the ZMP 1.5 binaries...).
+
 
 The Z3 aliases are now able to build the COM and OVR files. ZMCOMPIL.COM
 will build ZMPX.COM. OVRCOMP.COM will build all the OVR files.
