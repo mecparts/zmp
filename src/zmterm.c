@@ -85,7 +85,7 @@ ovmain()
             literal = FALSE;
          }
       }                         /* end of function keys */  
-      if (!kbdata) {
+      if (!kbdata && !keycount) {
          kbdata = getch();      /* if none, any at keyboard      */
          if (kbdata == ESC) {   /* if another key follows an ESC */
             escwait = 5;        /* within 5ms, it's a keyboard   */
@@ -380,4 +380,4 @@ static void adjustprthead()
 }
 
 /*         End of TERM module File 1         */
-
+
