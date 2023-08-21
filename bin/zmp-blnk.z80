@@ -26,11 +26,11 @@
 ; has been written in Z80 code for use with M80 or SLR. Assemble as follows:
 ;
 ;	SLR ZMO-xx01/h
-;	MLOAD ZMP.COM=ZMODEM.COM,ZMO-xx01.HEX
+;	MLOAD ZMP.COM=ZMPX.COM,ZMO-xx01.HEX
 ; or
 ;	M80 =ZMO-xx01.Z80
 ;	RELHEX ZMO-xx01
-;	MLOAD ZMP.COM=ZMODEM.COM,ZMO-xx01.HEX
+;	MLOAD ZMP.COM=ZMPX.COM,ZMO-xx01.HEX
 ;
 ;
 ;       (Don't use L80 without changing the source for assembly as a
@@ -570,4 +570,3 @@ toobig:	jp	errval		; Overlay too large!
 	 endif
 
 	end
-
